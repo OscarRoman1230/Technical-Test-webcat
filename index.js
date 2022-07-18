@@ -37,7 +37,54 @@ import _ from 'lodash'
 const source = $t.source(1)
 $t.answer(1, async () => {
   // Your code goes here
-  return 
+    const newObject = {
+        balance: 0,
+        income: 0,
+        expenses: 0,
+        byCategories: {
+            Restaurants: 0,
+            Income: 0,
+            Groceries: 0,
+            Rent: 0,
+        }
+    }
+    const data = source.map((item) => {
+        let newObject = {
+            income: item.type === 'income' ? item.amount : 0,
+            expenses: item.type === 'expense' ? item.amount: 0,
+            byCategories: {
+                Restaurants: 0,
+                Income: 0,
+                Groceries: 0,
+                Rent: 0,
+            }
+        }
+        switch (item.category) {
+            case 'Income':
+                newObject.byCategories.Income = item.amount
+                break;
+            case 'Restaurants':
+                newObject.byCategories.Restaurants = item.amount
+                break;
+            case 'Groceries':
+                newObject.byCategories.Groceries = item.amount
+                break;
+            case 'Rent':
+                newObject.byCategories.Rent = item.amount
+                break;
+        }
+        return newObject
+    })
+    data.forEach((item) => {
+        newObject.balance += item.income - item.expenses
+        newObject.income += item.income
+        newObject.expenses += item.expenses
+        newObject.byCategories.Restaurants -= item.byCategories.Restaurants
+        newObject.byCategories.Income += item.byCategories.Income
+        newObject.byCategories.Groceries -= item.byCategories.Groceries
+        newObject.byCategories.Rent -= item.byCategories.Rent
+    })
+  return newObject
 })
 
 /*
@@ -53,5 +100,13 @@ $t.answer(2, async () => {
     // 1. Get ids: $source.getIds()
     // 2. Get text for every id: $source.getText(id)
     // 3. Return array of texts
-    return 
+    const ids = await $source.getIds()
+    const data = []
+    for (const item of ids) {
+        const text = await $source.getText(item)
+
+        data.push(text)
+    }
+
+    return data
 })
